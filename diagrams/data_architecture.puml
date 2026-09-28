@@ -1,0 +1,32 @@
+@startuml
+left to right direction
+
+package "Data sources" {
+  file "Notes" as notes
+  file "PDFs / documents" as docs
+  file "Web pages" as web
+  file "Emails" as email
+  file "Chat transcripts" as chats
+}
+
+storage "Bronze\nObject storage\n(raw, UUID assigned)" as bronze
+storage "Silver\nObject storage\n(enriched / trimmed)" as silver
+
+package "Gold" {
+  database "Vector DB" as vector
+  database "Graph DB" as graph
+  database "PostgreSQL" as pg
+}
+
+notes --> bronze
+docs --> bronze
+web --> bronze
+email --> bronze
+chats --> bronze
+
+bronze --> silver : enrich / trim
+
+silver --> vector : embeddings
+silver --> graph : entities & relations
+silver --> pg : structured metadata
+@enduml

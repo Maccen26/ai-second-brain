@@ -1,0 +1,14 @@
+@startuml
+participant "AI APP" as App
+participant "MCP Server" as MCP
+participant "Tool" as Tool
+
+App -> MCP : Request available tools
+MCP --> App : Send list of tools and their capabilities
+note over App : AI APP chooses tool
+App -> MCP : Call chosen tool
+MCP -> Tool : Send tool request and data
+note over Tool : Tool processes data
+Tool --> MCP : Return result
+MCP --> App : Send tool response
+@enduml

@@ -8,6 +8,7 @@ This procts is a small personal project on about how to create a second brain fo
 2. Everything will be stored in a single database (Postgress) and will be accessible to all users.
 3. Everything is run locally.
 4. Time to build is around 8 hours. 
+5. MCP sessions is stateless so far
 
 
 
@@ -35,5 +36,15 @@ The architecture of the Ai Second Brain will be based on a modular design, allow
 
 ## Architecture:
 
+### Service
+
+AI APP -> MCP Server -(Send list of tools and their capabilities)-> AI APP --> (AI APP choose tool) --> MCP Server -(Send tool request and data)-> Tool --> (Tool process data) --> MCP Server -(Send tool response)-> AI APP 
+
+![alt text](image.png)
 
 
+### Data
+![alt text](image-1.png) 
+
+## Notes
+These architecture choices are not in depth and more meant to give a overview of how the project would work. 
