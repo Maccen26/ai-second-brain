@@ -4,7 +4,7 @@ This procts is a small personal project on about how to create a second brain fo
 
 
 ## Scope: 
-1. There will be no user authentication or user scoped retrieval.
+1. There will be no user authentication or user scoped retrieval. (NO MCP Gateway)
 2. Everything will be stored in a single database (Postgress) and will be accessible to all users.
 3. Everything is run locally.
 4. Time to build is around 8 hours. 
@@ -21,7 +21,7 @@ All three brains can be combined in a hybrid approach. Litterature says that the
 over 100.  
 
 
-## Architecture:
+## Flow in information:
 The architecture of the Ai Second Brain will be based on a modular design, allowing for easy integration of different components. The main components will include:
 
 1. **Data Ingestion**: This component will be responsible for ingesting data from various sources, such as text files, PDFs, and web pages. It will also be responsible for extracting relevant information from the ingested data and storing it in the appropriate format (markdown, vector, or graph).
@@ -32,6 +32,8 @@ The architecture of the Ai Second Brain will be based on a modular design, allow
 
 4. **User Interface**: This component will provide a user-friendly interface for interacting with the Ai Second Brain. It will allow users to input queries, view retrieved information, and manage the stored data. The interface will be designed to be intuitive and easy to use, with support
 
+
+## Architecture:
 
 
 
