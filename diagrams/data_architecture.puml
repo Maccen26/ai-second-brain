@@ -1,5 +1,5 @@
 @startuml
-left to right direction
+top to bottom direction
 
 package "Data sources" {
   file "Notes" as notes
@@ -11,7 +11,7 @@ package "Data sources" {
 
 package "Ingestion" {
   rectangle "Ingestion service\n(connectors, dedup, UUID assignment)" as ingest
-  database "Ingestion DB\n(source registry, run state, checksums)" as ingestdb
+  database "Ingestion DB\n(source registry, metadata)" as ingestdb
 }
 
 storage "Bronze\nObject storage\n(raw, UUID assigned)" as bronze

@@ -1,0 +1,90 @@
+@startuml
+hide circle
+skinparam nodesep 60
+skinparam ranksep 70
+skinparam padding 3
+
+entity "users" as users {
+  * id : uuid <<PK>>
+  --
+  * email : text <<UQ>>
+  * created_at : timestamptz
+}
+
+entity "sources" as sources {
+  * id : uuid <<PK>>
+  --
+  subject_user_id : uuid <<FK users, NULL>>
+  * source_type : source_type_enum
+  uri : text
+  * created_at : timestamptz
+}
+
+entity "source_permissions" as perms {
+  * id : uuid <<PK>>
+  --
+  * source_id : uuid <<FK sources>>
+  * user_id : uuid <<FK users>>
+  * permission : permission_enum
+  * granted_at : timestamptz
+  --
+  UQ (source_id, user_id)
+}
+
+entity "documents" as documents {
+  * id : uuid <<PK>>
+  --
+  * content_hash : bytea <<UQ>>
+  * source_id : uuid <<FK sources>>
+  * bronze_uri : text
+  * created_at : timestamptz
+  supersedes_id : uuid <<FK documents, NULL>>
+  replaced_by_id : uuid <<FK documents, NULL>>
+}
+
+documents }o--|| sources
+sources   }o--o| users : "subject"
+sources   ||--o{ perms
+perms     }o--|| users
+documents |o--o| documents
+
+note right of sources
+  source_type: notion | gdrive | imap | web | file
+
+  uri identifies which one:
+  the scraped URL, Drive folder,
+  mailbox or file path.
+
+  subject_user_id = whose information
+  this is. NULL for an unattended
+  web scrape.
+end note
+
+note bottom of perms
+  permission: control | read
+
+  control = full CRUD on the source.
+  read    = may retrieve its documents.
+
+  user_id = who has access.
+  permission = what type of access.
+
+  UQ (source_id, user_id) allows only one
+  grant per user per source.
+end note
+
+note left of documents
+  id is derived, not random:
+  uuidv5(APP_NAMESPACE, content_hash),
+  where APP_NAMESPACE is a fixed
+  constant in code. Same content always
+  yields the same id, so re-ingesting
+  a file is a no-op.
+
+  Revision chain, both directions:
+  supersedes_id  -> the older row this
+    one replaced. NULL = first version.
+  replaced_by_id -> the newer row that
+    replaced this one. NULL = current.
+end note
+@enduml
