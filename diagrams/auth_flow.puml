@@ -1,0 +1,35 @@
+@startuml
+actor "User" as User
+participant "AI APP\n(OAuth client)" as App
+participant "MCP Gateway\n(Resource Server)" as GW
+participant "Authorization Server\n(IdP)" as AS
+
+== Discovery ==
+App -> GW : Call MCP endpoint (no token)
+GW --> App : 401 Unauthorized\nWWW-Authenticate: Bearer\nresource_metadata=".well-known/oauth-protected-resource"
+App -> GW : GET /.well-known/oauth-protected-resource
+GW --> App : Protected Resource Metadata (RFC 9728)\nauthorization server + canonical resource URI
+App -> AS : GET /.well-known/oauth-authorization-server
+AS --> App : AS metadata (RFC 8414)
+opt no client credentials yet
+  App -> AS : Dynamic Client Registration (RFC 7591)
+  AS --> App : client_id
+end
+
+== User login ==
+App -> User : Open browser to authorization endpoint\n(code flow + PKCE, resource=<gateway URI>)
+User -> AS : Authenticate and consent
+AS --> App : Redirect with authorization code
+App -> AS : Token request (code + code_verifier + resource)
+AS --> App : Access token (audience = gateway) + refresh token
+
+== Authorized call ==
+App -> GW : Retry call with Authorization: Bearer <token>
+note over GW : Validate signature / introspect\nCheck audience = this gateway\nCheck expiry and scopes\nDerive user identity from token subject
+GW --> App : Proceed with tool discovery / tool call\n(scoped to this user)
+
+== Renewal ==
+App -> AS : Refresh token grant (token expired)
+AS --> App : New access token
+note over User, AS : User logs in again only when\nthe refresh token expires or is revoked
+@enduml

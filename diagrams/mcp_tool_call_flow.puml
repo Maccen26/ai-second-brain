@@ -1,0 +1,21 @@
+@startuml
+participant "AI APP" as App
+participant "MCP Gateway" as GW
+participant "MCP Server" as MCP
+participant "Tool" as Tool
+
+App -> GW : Request available tools
+GW -> MCP : Forward tool discovery request (user context)
+MCP --> GW : Send list of tools and their capabilities
+GW --> App : Send user-specific list of tools\n(scoped to this user's permissions)
+note over App : AI APP chooses tool
+
+App -> GW : Call chosen tool
+note over GW : Check host permissions for tool\nCheck call rate within permitted limit
+GW -> MCP : Forward tool call and data
+MCP -> Tool : Send tool request and data
+note over Tool : Tool processes data
+Tool --> MCP : Return result
+MCP --> GW : Send tool response
+GW --> App : Send tool response
+@enduml

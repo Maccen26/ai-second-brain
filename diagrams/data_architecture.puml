@@ -9,24 +9,34 @@ package "Data sources" {
   file "Chat transcripts" as chats
 }
 
+package "Ingestion" {
+  rectangle "Ingestion service\n(connectors, dedup, UUID assignment)" as ingest
+  database "Ingestion DB\n(source registry, run state, checksums)" as ingestdb
+}
+
 storage "Bronze\nObject storage\n(raw, UUID assigned)" as bronze
 storage "Silver\nObject storage\n(enriched / trimmed)" as silver
+storage "Gold\nCurated, query-ready\n(chunks, entities, metadata)" as gold
 
-package "Gold" {
+package "Service layer" {
   database "Vector DB" as vector
   database "Graph DB" as graph
   database "PostgreSQL" as pg
 }
 
-notes --> bronze
-docs --> bronze
-web --> bronze
-email --> bronze
-chats --> bronze
+notes --> ingest
+docs --> ingest
+web --> ingest
+email --> ingest
+chats --> ingest
+
+ingest --> ingestdb : ingestion metadata / state
+ingest --> bronze : raw payloads
 
 bronze --> silver : enrich / trim
+silver --> gold : curate / model
 
-silver --> vector : embeddings
-silver --> graph : entities & relations
-silver --> pg : structured metadata
+gold --> vector : embeddings
+gold --> graph : entities & relations
+gold --> pg : structured metadata
 @enduml
